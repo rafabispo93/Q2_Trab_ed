@@ -44,11 +44,11 @@ double calculate(char *s)
 {
     double a, b;
     int i;
-    char *e, *w = " \t\n\r\f";
-    //strtok quebra a string de acordo com a variavel w
-    for (s = strtok(s, w); s; s = strtok(0, w)) {
-      a = strtod(s, &e);
-      if (e > s)
+    char *ch, *separator = " \t\n\r\f";
+    //strtok quebra a string de acordo com a variavel separator
+    for (s = strtok(s, separator); s; s = strtok(0, separator)) {
+      a = strtod(s, &ch);
+      if (ch > s)
         push(a);
     #define operate(x)  b = pop(), a = pop(), push(x)
     else
