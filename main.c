@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-/* 
+/*
  * File:   main.c
  * Author: rafael
  *
@@ -15,63 +15,70 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
- 
-void die(const char *msg)
+
+void stop(const char *msg)
 {
-	fprintf(stderr, "%s", msg);
-	abort();
+    printf("%s", msg);
+    abort();
 }
- 
-#define MAX_D 256
-double stack[MAX_D];
-int depth;
- 
+
+#define MAX_SIZE 256
+double stack[MAX_SIZE];
+int top;
+
 void push(double v)
 {
-	if (depth >= MAX_D) die("stack overflow\n");
-	stack[depth++] = v;
+  if (top >= MAX_SIZE)
+    stop("Pilha cheia\n");
+  stack[top++] = v;
 }
- 
+
 double pop()
 {
-	if (!depth) die("stack underflow\n");
-	return stack[--depth];
+  if (!top)
+    stop("Pilha vazia\n");
+  return stack[--top];
 }
- 
-double rpn(char *s)
+
+double calculate(char *s)
 {
-	double a, b;
-	int i;
-	char *e, *w = " \t\n\r\f";
- 
-	for (s = strtok(s, w); s; s = strtok(0, w)) {
-		a = strtod(s, &e);
-		if (e > s)		printf(" :"), push(a);
-#define binop(x) printf("%c:", *s), b = pop(), a = pop(), push(x)
-		else if (*s == '+')	binop(a + b);
-		else if (*s == '-')	binop(a - b);
-		else if (*s == '*')	binop(a * b);
-		else if (*s == '/')	binop(a / b);
-//		else if (*s == '^')	binop(pow(a, b));
-#undef binop
-		else {
-			fprintf(stderr, "'%c': ", *s);
-			die("unknown oeprator\n");
-		}
-		for (i = depth; i-- || 0 * putchar('\n'); )
-			printf(" %g", stack[i]);
-	}
- 
-	if (depth != 1) die("stack leftover\n");
- 
+    double a, b;
+    int i;
+    char *e, *w = " \t\n\r\f";
+    //strtok quebra a string de acordo com a variavel w
+    for (s = strtok(s, w); s; s = strtok(0, w)) {
+      a = strtod(s, &e);
+      if (e > s)
+        push(a);
+    #define operate(x)  b = pop(), a = pop(), push(x)
+    else
+      if (*s == '+')
+        operate(a + b);
+    else
+      if (*s == '-')
+        operate(a - b);
+    else
+      if (*s == '*')
+        operate(a * b);
+    else
+      if (*s == '/')
+        operate(a / b);
+		// else if (*s == '^')	operate(pow(a, b));
+    #undef operate
+    else {
+      printf("'%c': ", *s);
+      stop("Operação desconhecida\n");
+    }
+}
+
 	return pop();
 }
- 
+
 int main(void)
-{   
+{
     char s[50];
     printf("Digite a expressao separando os digitos com espaco: ");
     scanf("%99[^\n]", &s);
-    printf("%g\n", rpn(s));
+    printf("Resultado da operação : %g\n", calculate(s));
     return 0;
 }
